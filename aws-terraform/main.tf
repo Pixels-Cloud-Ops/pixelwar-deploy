@@ -68,6 +68,15 @@ resource "aws_security_group" "indus_sg" {
     cidr_blocks = ["0.0.0.0/0"] 
   }
 
+  # API K3s : Crucial pour que le Worker rejoigne le Master
+  ingress {
+    from_port   = 6443
+    to_port     = 6443
+    protocol    = "tcp"
+    # On autorise uniquement les machines qui ont ce même SG à se parler
+    self        = true 
+  }
+
   # 3. SORTIE : Pour que la machine puisse télécharger K3s et RÉPONDRE aux clients
   egress {
     from_port   = 0
@@ -94,6 +103,15 @@ resource "aws_security_group" "prod_sg" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # Pour les joueurs
+  }
+
+  # API K3s : Crucial pour que le Worker rejoigne le Master
+  ingress {
+    from_port   = 6443
+    to_port     = 6443
+    protocol    = "tcp"
+    # On autorise uniquement les machines qui ont ce même SG à se parler
+    self        = true 
   }
 
   # 3. SORTIE : Pour que la machine puisse télécharger K3s et RÉPONDRE aux clients
