@@ -76,6 +76,20 @@ resource "aws_security_group" "indus_sg" {
     # On autorise uniquement les machines qui ont ce même SG à se parler
     self        = true 
   }
+  #conx back
+  ingress {
+    from_port   = 30030
+    to_port     = 30030
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+  #conx front
+  ingress {
+    from_port   = 30080
+    to_port     = 30080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
 
   # 3. SORTIE : Pour que la machine puisse télécharger K3s et RÉPONDRE aux clients
   egress {
