@@ -1,0 +1,30 @@
+---
+- name: "Installation K3s"
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: "Nettoyage radical"
+      shell: |
+        /usr/local/bin/k3s-uninstall.sh || true
+        /usr/local/bin/k3s-agent-uninstall.sh || true
+      failed_when: false
+
+    - name: "Master : Installation"
+      shell: curl -sfL https://get.k3s.io | sh -s - --bind-address=0.0.0.0 --prefer-bundled-bin
+      when: "'master' in group_names"
+
+    - name: "Master : Récupérer l'IP privée réelle"
+      shell: hostname -I | awk '{print $1}'
+      register: internal_ip
+      when: "'master' in group_names"
+
+    - name: "Master : Récupérer le Token"
+      shell: cat /var/lib/rancher/k3s/server/node-token
+      register: master_token
+      when: "'master' in group_names"
+
+    - name: "Worker : Installation et Liaison"
+      shell: |
+        curl -sfL https://get.k3s.io | K3S_URL=https://{{ hostvars[groups['master'][0]]['internal_ip']['stdout'] }}:6443 K3S_TOKEN={{ hostvars[groups['master'][0]]['master_token']['stdout'] }} INSTALL_K3S_EXEC="--prefer-bundled-bin" sh -
+      when: "'workers' in group_names"
