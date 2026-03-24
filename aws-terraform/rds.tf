@@ -19,7 +19,7 @@ resource "aws_security_group" "rds_sg" {
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [aws_security_group.prod_sg.id]  # EC2 prod seulement
+    security_groups = [aws_security_group.prod_sg.id,aws_security_group.indus_sg.id]  
   }
 
   egress {
