@@ -3,3 +3,15 @@ variable "aws_region" {
   type        = string
   default     = "eu-west-3"
 }
+
+variable "db_username" {
+  description = "Username PostgreSQL"
+  type        = string
+  default     = "admindb"
+}
+
+variable "db_password" {
+  description = "Mot de passe PostgreSQL"
+  type        = string
+  sensitive   = true
+}
