@@ -6,12 +6,27 @@
   tasks:
     - name: "Nettoyage radical"
       shell: |
+        /usr/local/bin/k3s-killall.sh || true
         /usr/local/bin/k3s-uninstall.sh || true
         /usr/local/bin/k3s-agent-uninstall.sh || true
       failed_when: false
 
     - name: "Master : Installation"
-      shell: curl -sfL https://get.k3s.io | sh -s - --bind-address=0.0.0.0 --prefer-bundled-bin
+      shell: |
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.31.14+k3s1" sh -s - server \
+          --bind-address=0.0.0.0 \
+          --advertise-address={{ ansible_default_ipv4.address }} \
+          --flannel-iface=ens5 \
+          --write-kubeconfig-mode=644 \
+          --prefer-bundled-bin \
+          --disable=traefik
+      when: "'master' in group_names"
+
+    - name: "Master : Attendre que K3s soit prêt"
+      wait_for:
+        port: 6443
+        delay: 10
+        timeout: 60
       when: "'master' in group_names"
 
     - name: "Master : Récupérer l'IP privée réelle"
@@ -26,5 +41,10 @@
 
     - name: "Worker : Installation et Liaison"
       shell: |
-        curl -sfL https://get.k3s.io | K3S_URL=https://{{ hostvars[groups['master'][0]]['internal_ip']['stdout'] }}:6443 K3S_TOKEN={{ hostvars[groups['master'][0]]['master_token']['stdout'] }} INSTALL_K3S_EXEC="--prefer-bundled-bin" sh -
+        curl -sfL https://get.k3s.io | \
+          INSTALL_K3S_VERSION="v1.31.14+k3s1" \
+          K3S_URL=https://{{ hostvars[groups['master'][0]]['internal_ip']['stdout'] }}:6443 \
+          K3S_TOKEN={{ hostvars[groups['master'][0]]['master_token']['stdout'] }} \
+          INSTALL_K3S_EXEC="--flannel-iface=ens5 --prefer-bundled-bin" \
+          sh -
       when: "'workers' in group_names"
