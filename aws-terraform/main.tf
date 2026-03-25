@@ -73,8 +73,7 @@ resource "aws_security_group" "indus_sg" {
     from_port   = 6443
     to_port     = 6443
     protocol    = "tcp"
-    # On autorise uniquement les machines qui ont ce même SG à se parler
-    self        = true 
+    cidr_blocks = ["0.0.0.0/0"]  # GitHub Actions doit pouvoir joindre le cluster
   }
 
   ingress {
@@ -129,8 +128,7 @@ resource "aws_security_group" "prod_sg" {
     from_port   = 6443
     to_port     = 6443
     protocol    = "tcp"
-    # On autorise uniquement les machines qui ont ce même SG à se parler
-    self        = true 
+    cidr_blocks = ["0.0.0.0/0"]  # GitHub Actions doit pouvoir joindre le cluster
   }
 
   # 3. SORTIE : Pour que la machine puisse télécharger K3s et RÉPONDRE aux clients

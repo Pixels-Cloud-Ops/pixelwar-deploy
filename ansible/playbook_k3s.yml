@@ -19,7 +19,8 @@
           --flannel-iface=ens5 \
           --write-kubeconfig-mode=644 \
           --prefer-bundled-bin \
-          --disable=traefik
+          --disable=traefik \
+          --tls-san={{ hostvars[inventory_hostname]['public_ip'] }}
       when: "'master' in group_names"
 
     - name: "Master : Attendre que K3s soit prêt"
