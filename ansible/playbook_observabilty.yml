@@ -35,9 +35,8 @@
           --set grafana.service.nodePort={{ grafana_nodeport }} \
           --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
           --set prometheus.service.type=NodePort \
-          --set prometheus.service.nodePort={{ prometheus_nodeport }}
+          --set prometheus.service.nodePort={{ prometheus_nodeport }} \
           --set prometheus.prometheusSpec.nodePort={{ prometheus_nodeport }}
-          
       environment:
         KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
