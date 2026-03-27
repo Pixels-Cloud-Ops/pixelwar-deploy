@@ -82,12 +82,25 @@ resource "aws_security_group" "indus_sg" {
     protocol    = "udp"
     self        = true  # entre les nodes uniquement
   }
+
+  # Grafana
   ingress {
-    from_port   = 30815
-    to_port     = 30815
+    from_port   = 32000
+    to_port     = 32000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  # Prometheus
+  ingress {
+    from_port   = 30090
+    to_port     = 30090
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+
+
   # 3. SORTIE : Pour que la machine puisse télécharger K3s et RÉPONDRE aux clients
   egress {
     from_port   = 0
@@ -122,6 +135,24 @@ resource "aws_security_group" "prod_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # Pour les joueurs
   }
+
+  # Grafana
+  ingress {
+    from_port   = 32000
+    to_port     = 32000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Prometheus
+  ingress {
+    from_port   = 30090
+    to_port     = 30090
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+
 
   # API K3s : Crucial pour que le Worker rejoigne le Master
   ingress {
